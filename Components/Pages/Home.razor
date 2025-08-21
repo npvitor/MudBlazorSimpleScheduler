@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using MudBlazorSimpleScheduler.Components.Dialogs
+@using MudBlazorSimpleScheduler.Model
 
 @inject IDialogService DialogService
 
@@ -274,25 +275,5 @@
         }
 
         _loading = false;
-    }
-
-    public class Schedulers
-    {
-        public TimeOnly Time { get; set; }
-        public SchedulerEvents DayOne { get; set; } = new();
-        public SchedulerEvents DayTwo { get; set; } = new();
-        public SchedulerEvents DayThree { get; set; } = new();
-        public SchedulerEvents DayFour { get; set; } = new();
-        public SchedulerEvents DayFive { get; set; } = new();
-        public SchedulerEvents DaySix { get; set; } = new();
-        public SchedulerEvents DaySeven { get; set; } = new();
-    }
-
-    public class SchedulerEvents
-    {
-        public int Id { get; set; }
-        public DateOnly Date { get; set; }
-        public TimeOnly Time { get; set; }
-        public string Description { get; set; }
     }
 }
