@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MudBlazorSimpleScheduler.Components.Dialogs
 @using MudBlazorSimpleScheduler.Model
+@using static MudBlazor.CategoryTypes
 
 @inject IDialogService DialogService
 
@@ -26,14 +27,12 @@
         </MudGrid>
     </ToolBarContent>
     <Columns>
-        <TemplateColumn Title="Hora" StickyLeft="true">
+        <TemplateColumn Title="Hour" StickyLeft="true">
             <CellTemplate>
-                <MudStack Row>
-                    <MudText Typo="Typo.subtitle1">@context.Item.Time</MudText>
-                </MudStack>
+                <MudText Typo="Typo.subtitle1">@context.Item.Time</MudText>
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.DayOfWeek.ToString()}")</MudText>
@@ -43,11 +42,13 @@
             <CellTemplate>
                 @if (context.Item.DayOne != null && context.Item.DayOne.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DayOne.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayOne.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
