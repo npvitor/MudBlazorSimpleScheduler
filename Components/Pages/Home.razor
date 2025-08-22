@@ -52,7 +52,7 @@
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(1).DayOfWeek.ToString()}")</MudText>
@@ -62,15 +62,17 @@
             <CellTemplate>
                 @if (context.Item.DayTwo != null && context.Item.DayTwo.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DayTwo.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayTwo.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(1)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(1)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(2).DayOfWeek.ToString()}")</MudText>
@@ -80,15 +82,17 @@
             <CellTemplate>
                 @if (context.Item.DayThree != null && context.Item.DayThree.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DayThree.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayThree.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(2)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(2)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(3).DayOfWeek.ToString()}")</MudText>
@@ -98,15 +102,17 @@
             <CellTemplate>
                 @if (context.Item.DayFour != null && context.Item.DayFour.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DayFour.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayFour.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(3)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(3)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(4).DayOfWeek.ToString()}")</MudText>
@@ -116,15 +122,17 @@
             <CellTemplate>
                 @if (context.Item.DayFive != null && context.Item.DayFive.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DayFive.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayFive.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(4)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(4)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(5).DayOfWeek.ToString()}")</MudText>
@@ -134,15 +142,17 @@
             <CellTemplate>
                 @if (context.Item.DaySix != null && context.Item.DaySix.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DaySix.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DaySix.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(5)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(5)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn>
+        <TemplateColumn CellStyle="padding: 0px;align-items: center">
             <HeaderTemplate>
                 <div>
                     <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(6).DayOfWeek.ToString()}")</MudText>
@@ -152,11 +162,13 @@
             <CellTemplate>
                 @if (context.Item.DaySeven != null && context.Item.DaySeven.Id > 0)
                 {
-                    <MudText Typo="Typo.subtitle1">@context.Item.DaySeven.Description</MudText>
+                    <div style="background-color:greenyellow; height:69px">
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DaySeven.Description</MudText>
+                    </div>
                 }
                 else
                 {
-                    <MudButton OnClick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(6)), @context.Item.Time))" Variant="Variant.Outlined">Default</MudButton>
+                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(5)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
                 }
             </CellTemplate>
         </TemplateColumn>
@@ -205,7 +217,7 @@
         dialogParameters.Add("Data", _date);
         dialogParameters.Add("Time", _time);
 
-        var dialog = await DialogService.ShowAsync<NewScheduler>("Novo evento", parameters: dialogParameters);
+        var dialog = await DialogService.ShowAsync<NewScheduler>("Novo evento", dialogParameters, new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Small });
         var result = await dialog.Result;
 
         if (result != null && !result.Canceled && !string.IsNullOrWhiteSpace(result.Data?.ToString()))
@@ -276,5 +288,7 @@
         }
 
         _loading = false;
+
+        StateHasChanged();
     }
 }
