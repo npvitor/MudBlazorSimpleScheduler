@@ -217,7 +217,7 @@
         dialogParameters.Add("Data", _date);
         dialogParameters.Add("Time", _time);
 
-        var dialog = await DialogService.ShowAsync<NewScheduler>("Novo evento", dialogParameters, new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Small });
+        var dialog = await DialogService.ShowAsync<NewScheduler>("Novo evento", dialogParameters, new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall });
         var result = await dialog.Result;
 
         if (result != null && !result.Canceled && !string.IsNullOrWhiteSpace(result.Data?.ToString()))
