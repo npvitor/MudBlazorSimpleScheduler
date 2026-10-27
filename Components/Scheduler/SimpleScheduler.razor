@@ -1,0 +1,239 @@
+@using System.Globalization
+
+<MudDataGrid @key="DaysToShow" Items="@_rows" Loading="@Loading" Bordered="true">
+    <ToolBarContent>
+        <MudGrid Justify="Justify.Center" Spacing="1">
+            <MudItem>
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowLeft" Color="Color.Primary" aria-label="Período anterior" OnClick="@(() => SetStartDateAsync(_startDate.AddDays(-DaysToShow)))" />
+            </MudItem>
+            <MudItem>
+                <MudPaper Width="140px" Elevation="0">
+                    <MudDatePicker @ref="_picker" Label="Data inicial" @bind-Date="_pickerDate" Culture="@EffectiveCulture" AutoClose="false" ShowToolbar="false">
+                        <PickerActions>
+                            <MudButton OnClick="@(() => CloseDatePicker(false))">Cancelar</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => CloseDatePicker(true))">OK</MudButton>
+                        </PickerActions>
+                    </MudDatePicker>
+                </MudPaper>
+            </MudItem>
+            <MudItem>
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" Color="Color.Primary" aria-label="Próximo período" OnClick="@(() => SetStartDateAsync(_startDate.AddDays(DaysToShow)))" />
+            </MudItem>
+            <MudItem Class="d-flex align-center">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => SetStartDateAsync(Today))">Hoje</MudButton>
+            </MudItem>
+        </MudGrid>
+    </ToolBarContent>
+    <Columns>
+        <TemplateColumn Title="Hora" StickyLeft="true">
+            <CellTemplate>
+                <MudText Typo="Typo.subtitle1">@context.Item.Time.ToString("t", EffectiveCulture)</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        @for (int i = 0; i < DaysToShow; i++)
+        {
+            // Cópia local: o lambda não pode capturar a variável do for.
+            var dayIndex = i;
+
+            <TemplateColumn CellStyle="padding: 0px;">
+                <HeaderTemplate>
+                    <div class="@(GetDay(dayIndex) == Today ? "mud-primary-text" : null)">
+                        <MudText Typo="Typo.h6">@DayName(GetDay(dayIndex))</MudText>
+                        <MudText Typo="Typo.subtitle1">@GetDay(dayIndex).ToString("d", EffectiveCulture)</MudText>
+                    </div>
+                </HeaderTemplate>
+                <CellTemplate>
+                    @{
+                        var day = GetDay(dayIndex);
+                        var slotEvents = context.Item.Days[dayIndex];
+                        var time = context.Item.Time;
+                    }
+                    <div class="scheduler-cell" style="height:@(SlotHeight)px">
+                        @if (slotEvents.Count > 0)
+                        {
+                            @foreach (var schedulerEvent in slotEvents)
+                            {
+                                <div class="scheduler-event" style="@EventStyle?.Invoke(schedulerEvent)" title="@schedulerEvent.Description"
+                                     @onclick="@(() => OnEventClick.InvokeAsync(schedulerEvent))">
+                                    @if (EventTemplate is not null)
+                                    {
+                                        @EventTemplate(schedulerEvent)
+                                    }
+                                    else
+                                    {
+                                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Class="scheduler-event-text">@schedulerEvent.Description</MudText>
+                                    }
+                                </div>
+                            }
+                        }
+                        else if (IsPast(day, time))
+                        {
+                            <div class="scheduler-slot scheduler-slot-past" />
+                        }
+                        else
+                        {
+                            <div class="scheduler-slot" @onclick="@(() => OnSlotClick.InvokeAsync(new SchedulerSlot(day, time)))" />
+                        }
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+        }
+    </Columns>
+</MudDataGrid>
+
+@code {
+    /// <summary>Eventos a exibir. Eventos fora do período ou do expediente são ignorados.</summary>
+    [Parameter]
+    public IEnumerable<SchedulerEvents> Events { get; set; } = Enumerable.Empty<SchedulerEvents>();
+
+    /// <summary>Primeiro dia exibido. Nulo = hoje. Suporta <c>@bind-StartDate</c>.</summary>
+    [Parameter]
+    public DateOnly? StartDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly?> StartDateChanged { get; set; }
+
+    [Parameter]
+    public int DaysToShow { get; set; } = 7;
+
+    [Parameter]
+    public TimeOnly OpeningTime { get; set; } = new TimeOnly(09, 00);
+
+    [Parameter]
+    public TimeOnly ClosingTime { get; set; } = new TimeOnly(18, 00);
+
+    [Parameter]
+    public int SlotDurationMinutes { get; set; } = 60;
+
+    /// <summary>Altura de cada horário, em pixels.</summary>
+    [Parameter]
+    public int SlotHeight { get; set; } = 69;
+
+    /// <summary>Permite clicar em horários que já passaram.</summary>
+    [Parameter]
+    public bool AllowPastSlots { get; set; } = true;
+
+    [Parameter]
+    public bool Loading { get; set; }
+
+    /// <summary>Cultura usada nas datas e horas. Nulo = <see cref="CultureInfo.CurrentCulture"/>.</summary>
+    [Parameter]
+    public CultureInfo? Culture { get; set; }
+
+    /// <summary>Conteúdo customizado de cada evento. Padrão: a descrição.</summary>
+    [Parameter]
+    public RenderFragment<SchedulerEvents>? EventTemplate { get; set; }
+
+    /// <summary>Estilo CSS inline por evento, ex.: cor por status.</summary>
+    [Parameter]
+    public Func<SchedulerEvents, string?>? EventStyle { get; set; }
+
+    /// <summary>Disparado ao clicar em um horário livre.</summary>
+    [Parameter]
+    public EventCallback<SchedulerSlot> OnSlotClick { get; set; }
+
+    /// <summary>Disparado ao clicar em um evento existente.</summary>
+    [Parameter]
+    public EventCallback<SchedulerEvents> OnEventClick { get; set; }
+
+    private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
+
+    private CultureInfo EffectiveCulture => Culture ?? CultureInfo.CurrentCulture;
+
+    private MudDatePicker? _picker;
+    private DateTime? _pickerDate;
+
+    private DateOnly _startDate = Today;
+    private DateOnly? _lastStartDateParameter;
+    private bool _firstParametersSet = true;
+
+    private List<SchedulerRow> _rows = new();
+
+    protected override void OnParametersSet()
+    {
+        if (DaysToShow < 1)
+            throw new ArgumentOutOfRangeException(nameof(DaysToShow), DaysToShow, "DaysToShow deve ser maior que zero.");
+
+        if (SlotDurationMinutes < 1)
+            throw new ArgumentOutOfRangeException(nameof(SlotDurationMinutes), SlotDurationMinutes, "SlotDurationMinutes deve ser maior que zero.");
+
+        // Só aceita a data do pai quando ela muda, para não desfazer a navegação interna
+        // quando o pai não usa @bind-StartDate.
+        if (_firstParametersSet || StartDate != _lastStartDateParameter)
+        {
+            _firstParametersSet = false;
+            _lastStartDateParameter = StartDate;
+            _startDate = StartDate ?? Today;
+        }
+
+        GeneratingScheduler();
+    }
+
+    private void GeneratingScheduler()
+    {
+        _pickerDate = _startDate.ToDateTime(TimeOnly.MinValue);
+
+        // Arredonda para baixo: um horário que terminaria depois do fechamento não é criado.
+        var slotCount = (int)((ClosingTime - OpeningTime).TotalMinutes / SlotDurationMinutes);
+
+        var rows = new List<SchedulerRow>(slotCount);
+
+        for (int i = 0; i < slotCount; i++)
+            rows.Add(new SchedulerRow(OpeningTime.AddMinutes(SlotDurationMinutes * i), DaysToShow));
+
+        foreach (var schedulerEvent in Events)
+        {
+            var dayIndex = schedulerEvent.Date.DayNumber - _startDate.DayNumber;
+
+            if (dayIndex < 0 || dayIndex >= DaysToShow)
+                continue;
+
+            // Encaixa o evento no horário que o contém (ex.: 13:15 vai para 13:00).
+            // A subtração de TimeOnly dá a volta no relógio, então eventos antes da abertura caem fora do intervalo.
+            var slotIndex = (int)((schedulerEvent.Time - OpeningTime).TotalMinutes / SlotDurationMinutes);
+
+            if (slotIndex >= slotCount)
+                continue;
+
+            rows[slotIndex].Days[dayIndex].Add(schedulerEvent);
+        }
+
+        foreach (var row in rows)
+            foreach (var dayEvents in row.Days)
+                dayEvents.Sort((a, b) => a.Time.CompareTo(b.Time));
+
+        _rows = rows;
+    }
+
+    private DateOnly GetDay(int dayIndex) => _startDate.AddDays(dayIndex);
+
+    private bool IsPast(DateOnly day, TimeOnly time) =>
+        !AllowPastSlots && day.ToDateTime(time) < DateTime.Now;
+
+    private string DayName(DateOnly day)
+    {
+        var name = day.ToString("dddd", EffectiveCulture);
+        return name.Length == 0 ? name : char.ToUpper(name[0], EffectiveCulture) + name[1..];
+    }
+
+    private async Task CloseDatePicker(bool confirm)
+    {
+        if (_picker is null)
+            return;
+
+        await _picker.CloseAsync(confirm);
+
+        if (confirm && _pickerDate is DateTime date)
+            await SetStartDateAsync(DateOnly.FromDateTime(date));
+        else
+            _pickerDate = _startDate.ToDateTime(TimeOnly.MinValue);
+    }
+
+    private async Task SetStartDateAsync(DateOnly date)
+    {
+        _startDate = date;
+        GeneratingScheduler();
+
+        await StartDateChanged.InvokeAsync(date);
+    }
+}

@@ -1,294 +1,93 @@
 ﻿@page "/"
-@using MudBlazorSimpleScheduler.Components.Dialogs
-@using MudBlazorSimpleScheduler.Model
-@using static MudBlazor.CategoryTypes
 
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_schedulers" Loading="@_loading" Bordered="true">
-    <ToolBarContent>
-        <MudGrid Justify="Justify.Center" Spacing="1">
-            <MudItem>
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowLeft" Color="Color.Primary" aria-label="github" OnClick="@(() => AddDayDatePicker(false))" />
-            </MudItem>
-            <MudItem>
-                <MudPaper Width="140px">
-                    <MudDatePicker @ref="_picker" Label="Initial date" @bind-Date="_date" AutoClose="false" ShowToolbar="false">
-                        <PickerActions>
-                            <MudButton OnClick="@(() => CloseDatePicker(false))">Cancel</MudButton>
-                            <MudButton Color="Color.Primary" OnClick="@(() => CloseDatePicker(true))">OK</MudButton>
-                        </PickerActions>
-                    </MudDatePicker>
-                </MudPaper>
-            </MudItem>
-            <MudItem>
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" Color="Color.Primary" aria-label="github" OnClick="@(() => AddDayDatePicker(true))" />
-            </MudItem>
-        </MudGrid>
-    </ToolBarContent>
-    <Columns>
-        <TemplateColumn Title="Hour" StickyLeft="true">
-            <CellTemplate>
-                <MudText Typo="Typo.subtitle1">@context.Item.Time</MudText>
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DayOne != null && context.Item.DayOne.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayOne.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(1).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(1).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DayTwo != null && context.Item.DayTwo.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayTwo.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(1)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(2).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(2).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DayThree != null && context.Item.DayThree.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayThree.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(2)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(3).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(3).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DayFour != null && context.Item.DayFour.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayFour.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(3)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(4).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(4).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DayFive != null && context.Item.DayFive.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DayFive.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(4)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(5).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(5).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DaySix != null && context.Item.DaySix.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DaySix.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(5)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn CellStyle="padding: 0px;align-items: center">
-            <HeaderTemplate>
-                <div>
-                    <MudText Typo="Typo.h6">@($"{InicioScheduler.AddDays(6).DayOfWeek.ToString()}")</MudText>
-                    <MudText Typo="Typo.subtitle1">@($"{InicioScheduler.AddDays(6).ToShortDateString()}")</MudText>
-                </div>
-            </HeaderTemplate>
-            <CellTemplate>
-                @if (context.Item.DaySeven != null && context.Item.DaySeven.Id > 0)
-                {
-                    <div style="background-color:greenyellow; height:69px">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@context.Item.DaySeven.Description</MudText>
-                    </div>
-                }
-                else
-                {
-                    <div onclick="@(() => OpenDialogAsync(DateOnly.FromDateTime(InicioScheduler.AddDays(5)), @context.Item.Time))" style="background-color:aliceblue; height:69px" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<PageTitle>MudBlazor Simple Scheduler</PageTitle>
+
+<SimpleScheduler Events="_events"
+                 @bind-StartDate="_startDate"
+                 OpeningTime="Abertura"
+                 ClosingTime="Encerramento"
+                 SlotDurationMinutes="DuracaoLocacao"
+                 OnSlotClick="CreateEventAsync"
+                 OnEventClick="EditEventAsync" />
 
 @code {
-    private bool _loading = true;
-
-    List<Schedulers> _schedulers = new();
-
     public int DuracaoLocacao { get; set; } = 60;
 
     public TimeOnly Abertura { get; set; } = new TimeOnly(09, 00);
     public TimeOnly Encerramento { get; set; } = new TimeOnly(18, 00);
 
-    public DateTime InicioScheduler { get; set; } = DateTime.Now;
-
-    private MudDatePicker _picker;
-    private DateTime? _date = DateTime.Today;
+    private DateOnly? _startDate;
 
     List<SchedulerEvents> _events = new();
-    double maxEventsPerDay = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        maxEventsPerDay = (Encerramento - Abertura).TotalMinutes / DuracaoLocacao;
+        // Dados de exemplo relativos a hoje, para a semana exibida nunca abrir vazia.
+        // Em um projeto real, carregue os eventos do banco de dados aqui.
+        var hoje = DateOnly.FromDateTime(DateTime.Today);
 
         _events = new List<SchedulerEvents>
         {
-            new SchedulerEvents(){ Id = 1, Date = new DateOnly(2025,08,21), Time = new TimeOnly(13, 00), Description = "Vitor" },
-            new SchedulerEvents(){ Id = 3, Date = new DateOnly(2025,08,22), Time = new TimeOnly(15, 00), Description = "Junior" },
-            new SchedulerEvents(){ Id = 4, Date = new DateOnly(2025,08,29), Time = new TimeOnly(10, 00), Description = "Enryk" },
-            new SchedulerEvents(){ Id = 5, Date = new DateOnly(2025,08,24), Time = new TimeOnly(09, 00), Description = "Thales" },
-            new SchedulerEvents(){ Id = 7, Date = new DateOnly(2025,08,25), Time = new TimeOnly(12, 00), Description = "Chayene" },
-            new SchedulerEvents(){ Id = 8, Date = new DateOnly(2025,08,14), Time = new TimeOnly(16, 00), Description = "Tulio" },
-            new SchedulerEvents(){ Id = 9, Date = new DateOnly(2025,09,02), Time = new TimeOnly(12, 00), Description = "Isac" },
+            new SchedulerEvents(){ Id = 1, Date = hoje, Time = new TimeOnly(13, 00), Description = "Vitor" },
+            new SchedulerEvents(){ Id = 3, Date = hoje.AddDays(1), Time = new TimeOnly(15, 00), Description = "Junior" },
+            new SchedulerEvents(){ Id = 4, Date = hoje.AddDays(8), Time = new TimeOnly(10, 00), Description = "Enryk" },
+            new SchedulerEvents(){ Id = 5, Date = hoje.AddDays(3), Time = new TimeOnly(09, 00), Description = "Thales" },
+            new SchedulerEvents(){ Id = 7, Date = hoje.AddDays(4), Time = new TimeOnly(12, 00), Description = "Chayene" },
+            new SchedulerEvents(){ Id = 8, Date = hoje.AddDays(-7), Time = new TimeOnly(16, 00), Description = "Tulio" },
+            new SchedulerEvents(){ Id = 9, Date = hoje.AddDays(6), Time = new TimeOnly(17, 00), Description = "Isac" },
         };
-
-        await GeneratingScheduler(InicioScheduler);
     }
 
-    private async Task OpenDialogAsync(DateOnly _date, TimeOnly _time)
+    private async Task CreateEventAsync(SchedulerSlot slot)
     {
-        var dialogParameters = new DialogParameters();
-        dialogParameters.Add("Data", _date);
-        dialogParameters.Add("Time", _time);
+        var result = await ShowEventDialogAsync("Novo evento", slot.Date, slot.Time);
 
-        var dialog = await DialogService.ShowAsync<NewScheduler>("Novo evento", dialogParameters, new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall });
-        var result = await dialog.Result;
-
-        if (result != null && !result.Canceled && !string.IsNullOrWhiteSpace(result.Data?.ToString()))
-        {
-            var _event = new SchedulerEvents() { Id = 1, Date = _date, Time = _time, Description = result.Data?.ToString() };
-            _events.Add(_event);
-
-            await GeneratingScheduler(this._date ?? DateTime.Now);
-        }
-    }
-
-    private async Task CloseDatePicker(bool confirm)
-    {
-        await _picker.CloseAsync(confirm);
-
-        if (confirm)
-            await GeneratingScheduler(_date ?? DateTime.Now);
-    }
-
-    private async Task AddDayDatePicker(bool add)
-    {
-        if (_date is null)
+        if (result?.Description is not { } descricao)
             return;
 
-        var data = _date ?? DateTime.Now;
-
-        if (add)
-            data = data.AddDays(7);
-        else
-            data = data.AddDays(-7);
-
-        _date = data;
-
-        await GeneratingScheduler(data);
+        _events.Add(new SchedulerEvents()
+        {
+            Id = _events.Count == 0 ? 1 : _events.Max(x => x.Id) + 1,
+            Date = slot.Date,
+            Time = slot.Time,
+            Description = descricao
+        });
     }
 
-    private async Task GeneratingScheduler(DateTime InitialDate)
+    private async Task EditEventAsync(SchedulerEvents schedulerEvent)
     {
-        _loading = true;
-        _schedulers.Clear();
+        var result = await ShowEventDialogAsync("Editar evento", schedulerEvent.Date, schedulerEvent.Time, schedulerEvent.Description, permitirExcluir: true);
 
-        InicioScheduler = InitialDate;
+        if (result is null)
+            return;
 
-        for (int i = 0; i < maxEventsPerDay; i++)
+        if (result.Delete)
         {
-            var _time = Abertura.AddMinutes(DuracaoLocacao * i);
-            var _date = new DateOnly(InicioScheduler.Year, InicioScheduler.Month, InicioScheduler.Day);
-
-            var _eventDayOne = _events.FirstOrDefault(x => x.Date == _date && x.Time == _time);
-            var _eventDayTwo = _events.FirstOrDefault(x => x.Date == _date.AddDays(1) && x.Time == _time);
-            var _eventDayThree = _events.FirstOrDefault(x => x.Date == _date.AddDays(2) && x.Time == _time);
-            var _eventDayFour = _events.FirstOrDefault(x => x.Date == _date.AddDays(3) && x.Time == _time);
-            var _eventDayFive = _events.FirstOrDefault(x => x.Date == _date.AddDays(4) && x.Time == _time);
-            var _eventDaySix = _events.FirstOrDefault(x => x.Date == _date.AddDays(5) && x.Time == _time);
-            var _eventDaySeven = _events.FirstOrDefault(x => x.Date == _date.AddDays(6) && x.Time == _time);
-
-            _schedulers.Add(new Schedulers()
-            {
-                Time = _time,
-                DayOne = _eventDayOne,
-                DayTwo = _eventDayTwo,
-                DayThree = _eventDayThree,
-                DayFour = _eventDayFour,
-                DayFive = _eventDayFive,
-                DaySix = _eventDaySix,
-                DaySeven = _eventDaySeven
-            });
+            _events.Remove(schedulerEvent);
+            Snackbar.Add("Evento excluído", Severity.Info);
         }
+        else if (result.Description is { } descricao)
+        {
+            schedulerEvent.Description = descricao;
+        }
+    }
 
-        _loading = false;
+    private async Task<EventDialogResult?> ShowEventDialogAsync(string title, DateOnly date, TimeOnly time, string? descricao = null, bool permitirExcluir = false)
+    {
+        var dialogParameters = new DialogParameters<EventDialog>
+        {
+            { x => x.Data, date },
+            { x => x.Time, time },
+            { x => x.Descricao, descricao },
+            { x => x.PermitirExcluir, permitirExcluir }
+        };
 
-        StateHasChanged();
+        var dialog = await DialogService.ShowAsync<EventDialog>(title, dialogParameters, new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall });
+        var result = await dialog.Result;
+
+        return result is { Canceled: false, Data: EventDialogResult eventResult } ? eventResult : null;
     }
 }

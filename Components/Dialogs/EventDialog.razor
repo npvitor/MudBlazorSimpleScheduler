@@ -1,0 +1,71 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Align="Align.Center" Typo="Typo.h4">@MudDialog.Title</MudText>
+        <MudGrid >
+            <MudItem xs="6">
+                <div>
+                    <MudText Align="Align.Center" Typo="Typo.h6">Data</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@Data.ToString("d")</MudText>
+                </div>
+
+            </MudItem>
+            <MudItem xs="6">
+                <div>
+                    <MudText Align="Align.Center" Typo="Typo.h6">Hora</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@Time.ToString("t")</MudText>
+                </div>
+
+            </MudItem>
+        </MudGrid>
+    </TitleContent>
+
+    <DialogContent>
+        <MudTextField @bind-Value="Descricao" Label="Descrição do evento" Variant="Variant.Outlined"
+                      AutoFocus="true" Immediate="true" MaxLength="200" OnKeyDown="OnKeyDown" />
+    </DialogContent>
+
+    <DialogActions>
+        @if (PermitirExcluir)
+        {
+            <MudButton Color="Color.Error" Class="mr-auto" OnClick="Delete">Excluir</MudButton>
+        }
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Disabled="@string.IsNullOrWhiteSpace(Descricao)" OnClick="Submit">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public DateOnly Data { get; set; }
+
+    [Parameter]
+    public TimeOnly Time { get; set; }
+
+    /// <summary>Descrição inicial, usada na edição.</summary>
+    [Parameter]
+    public string? Descricao { get; set; }
+
+    /// <summary>Mostra o botão Excluir (edição de evento existente).</summary>
+    [Parameter]
+    public bool PermitirExcluir { get; set; }
+
+    private void Submit()
+    {
+        if (string.IsNullOrWhiteSpace(Descricao))
+            return;
+
+        MudDialog.Close(DialogResult.Ok(new EventDialogResult(Descricao.Trim())));
+    }
+
+    private void Delete() => MudDialog.Close(DialogResult.Ok(new EventDialogResult(null, Delete: true)));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            Submit();
+    }
+}

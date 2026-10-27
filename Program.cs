@@ -22,6 +22,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Datas, horas e dias da semana do scheduler seguem a cultura da requisição.
+// Troque "pt-BR" pela cultura desejada ou adicione outras em AddSupportedCultures.
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture("pt-BR")
+    .AddSupportedCultures("pt-BR")
+    .AddSupportedUICultures("pt-BR"));
+
 app.UseStaticFiles();
 app.UseAntiforgery();
 
